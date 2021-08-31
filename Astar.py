@@ -54,7 +54,7 @@ class Spot:
     def reset(self):  # to reset the state
         self.color = WHITE
 
-    def make_start(self):
+    def make_start(self):  # to set the start spot
         self.color = ORANGE
 
     def make_closed(self):  # to close
@@ -79,9 +79,9 @@ class Spot:
     def update_neighbours(self, grid):
         self.neighbours = []
 
-        # if this row is the
+        # movement check
         if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_barrier():  # down
-            self.neighbours.append(grid[self.row + 1][self.col])
+            self.neighbours.append(grid[self.row + 1][self.col]) # move down
 
         if self.row > 0 and not grid[self.row - 1][self.col].is_barrier():  # up
             self.neighbours.append(grid[self.row - 1][self.col])
@@ -105,7 +105,14 @@ def h(p1, p2):  # manhattan distance
     return abs(x1 - x2) + abs(y1 - y2)
 
 
-def algorith(draw, grid, start, end):
+def reconstruct_path(came_from, current, draw):
+    while current in came_from:
+        current = came_from[current]
+        current.make_path()
+        draw()
+
+
+def algorithm(draw, grid, start, end):
     count = 0
     open_set = PriorityQueue()
     open_set.put((0, count, start))
@@ -126,6 +133,8 @@ def algorith(draw, grid, start, end):
         open_set_hash.remove(current)
 
         if current == end:
+            reconstruct_path(came_from, end, draw)
+            end.make_end()
             return True
 
         for neighbor in current.neighbours:
@@ -208,9 +217,6 @@ def main(win, width):
             if event.type == pygame.QUIT:  # if we press the X button at the top right hand corner, then stop running the game and quit
                 run = False
 
-            if started:
-                continue
-
             if pygame.mouse.get_pressed()[0]:  # if the user click the left mouse; 0 1 2: left middle right
                 pos = pygame.mouse.get_pos()  # get the mouse click position
                 row, col = get_clicked_pos(pos, ROWS, width)  # get mouse row and col
@@ -218,7 +224,7 @@ def main(win, width):
                 if not start and spot != end:  # start spot and end spot are not the same spot
                     start = spot  # make the mouse spot as the start
                     start.make_start()  # make the color as orange
-                elif not end and spot != end:  # end spot and end spot are not the same spot
+                elif not end and spot != start:  # end spot and end spot are not the same spot
                     end = spot  # make the mouse spot as the end
                     end.make_end()  # make the color as turquoise
                 elif spot != end and spot != start:  # barrier spot
@@ -235,12 +241,16 @@ def main(win, width):
                     end = None  # reset the end
 
             if event.type == pygame.KEYDOWN:  # if the keyboard is pressed
-                if event.key == pygame.K_SPACE and not started:  # if the key is the space bar and we haven't started the algorithm
+                if event.key == pygame.K_SPACE and start and end:  # if the key is the space bar and we haven't started the algorithm
                     for row in grid:
                         for spot in row:
                             spot.update_neighbours(grid)
 
                     algorithm(lambda: draw(win, grid, ROWS, width), grid, start, end)
+                if event.key == pygame.K_c:
+                    start = None
+                    end = None
+                    grid = make_grid(ROWS, width)
 
     pygame.quit()  # exit the game window
 

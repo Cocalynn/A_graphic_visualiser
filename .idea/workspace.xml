@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d052a548-f0eb-4a0c-8a14-bc66d0098c6e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/ans_example.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Astar.py" beforeDir="false" afterPath="$PROJECT_DIR$/Astar.py" afterDir="false" />
     </list>
